@@ -15,7 +15,7 @@ POST http://192.168.1.16:3002/posts
 Content-Type: application/json
 
 {
-      "title": "A random title",
+      "title": "A random title 2",
       "description": "Another post by author 3, this will send a mail to all other authors",
       "author": "A003"
 }
@@ -24,12 +24,12 @@ POST http://192.168.1.16:3002/authors
 Content-Type: application/json
 
 {
-      "author_name": "asadas",
-      "author_email": "author@ausftafhor.com"
+      "author_name": "Dennis Kuruvilla 3 ",
+      "author_email": "denniskuruvilla7773@gmail.com"
 }
 
 ###
-PUT http://192.168.1.16:3002/posts/P008
+PUT http://192.168.1.16:3002/posts/P002
 Content-Type: application/json
 
 {
@@ -43,5 +43,5 @@ Content-Type: application/json
 DELETE http://192.168.1.16:3002/posts/P008
 ###
 
-DELETE http://192.168.1.16:3002/authors/A004
+DELETE http://192.168.1.16:3002/authors/A002
 

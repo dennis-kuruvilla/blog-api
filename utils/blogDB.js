@@ -1,15 +1,21 @@
 require('dotenv').config();
 
-const dbConnection = async () =>{
+const executeQuery = async (query) =>{
   const user= process.env.DB_USERNAME
   const password = process.env.DB_PASSWORD
   
   // get the client
   const mysql = require('mysql2/promise');
   // create the connection
-  const connection = await mysql.createConnection({host:'104.198.19.69', user: user, password: password, database: 'blogDB'});
+  const connection = await mysql.createConnection({host:'185.224.138.91', user: user, password: password, database: 'u244846814_blogDB'});
   console.log("connected to DB")
-  return connection
+  // return connection
+
+  const [rows] = await connection.execute(query);
+
+  await connection.end()
+
+  return [rows]
 }
 
-module.exports={dbConnection}
+module.exports={executeQuery}

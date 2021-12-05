@@ -4,28 +4,28 @@ require('express-async-errors')
 const cors = require('cors')
 
 const middleware = require('./utils/middleware')
-const connection = require('./utils/blogDB')
+const blogDB = require('./utils/blogDB')
 const mailer= require('./utils/mailer')
 
 const app = express()
 
-var blogDB
+// var blogDB
 
 
 app.use(express.json())
 app.use(cors())
 
-const connectToDB = async() => {
-    try{
- blogDB = await connection.dbConnection()
-    }
-    catch(error){
-        console.log("Error connecting to DB, please check username/password. Also check if you are authorized in GCP")
-        console.log(error)
-    }
-}
+// const connectToDB = async() => {
+//     try{
+//  blogDB = await connection.dbConnection()
+//     }
+//     catch(error){
+//         console.log("Error connecting to DB, please check username/password. Also check if you are authorized in GCP")
+//         console.log(error)
+//     }
+// }
 
-connectToDB()
+// connectToDB()
 
 const requestLogger = (request, response, next) => {
     console.log('Method:', request.method)
@@ -53,24 +53,27 @@ app.post('/posts', async (req,res) => {
     }
     else{
         const post_id = await generatePostID()
-        const [rows] = await blogDB.execute(`insert into post values('${post_id}','${title}','${description}','${author}')`);
+        const rows = await blogDB.executeQuery(`insert into post values('${post_id}','${title}','${description}','${author}')`);
         res.json(rows)
 
         //Sending mail to every other authors
         let from = "Node Mailer"
         let subject= "new post"
         let text="An author has added a post"
-        const [rows2] = await blogDB.execute(`select author_email from author where author_id!="${author}"`);
-        const [rows3] = await blogDB.execute(`select author_name from author where author_id="${author}"`);
+        const [rows2] = await blogDB.executeQuery(`select author_email from author where author_id!="${author}"`);
+        const [rows3] = await blogDB.executeQuery(`select author_name from author where author_id="${author}"`);
+        console.log("rows2",rows2)
+        console.log("rows3",rows3)
         var name = rows3[0].author_name
         let to=rows2.map(row=> row.author_email)
+        console.log("to",to)
         let html = `<p>${name} has added a new post:</p> <h2>${title}</h2><p>${description}</p>`
         mailer.sendMail(to,subject,text,html)
     }
 })
 
 app.get('/posts', async (req, res) => {
-    const [rows] = await blogDB.execute('select * from post');
+    const [rows] = await blogDB.executeQuery('select * from post');
         res.json(rows)
   })
 
@@ -79,11 +82,11 @@ app.get('/posts/:id', async (req, res,next) => {
     const id =req.params.id
     if(id.charAt(0)==="P")
     {
-        const [rows] = await blogDB.execute(`select * from post where post_id="${id}"`);
+        const [rows] = await blogDB.executeQuery(`select * from post where post_id="${id}"`);
         if (rows.length>0) res.json(rows);
     }
     else if(id.charAt(0)==="A"){
-        const [rows] = await blogDB.execute(`select * from post where author="${id}"`);
+        const [rows] = await blogDB.executeQuery(`select * from post where author="${id}"`);
         if (rows.length>0) res.json(rows);
     }
     if (!res.headersSent) next();
@@ -101,7 +104,8 @@ app.put('/posts/:id', async (req,res, next) => {
         res.status(400).send({ error: 'Invalid Request' })
     }
     else{
-        const [rows] = await blogDB.execute(`update post set title='${title}',description='${description}',author='${author}' where post_id='${post_id}'`);
+        const [rows] = await blogDB.executeQuery(`update post set title='${title}',description='${description}',author='${author}' where post_id='${post_id}'`);
+        console.log(rows)
         if (rows.affectedRows>0) res.json(rows);
     }
     if (!res.headersSent) next();
@@ -109,14 +113,15 @@ app.put('/posts/:id', async (req,res, next) => {
 
 app.delete('/posts/:id', async (req,res,next) => {
     const post_id =req.params.id
-    const [rows] = await blogDB.execute(`delete from post where post_id='${post_id}'`);
+    const [rows] = await blogDB.executeQuery(`delete from post where post_id='${post_id}'`);
     if (rows.affectedRows>0) res.json(rows);
     if (!res.headersSent) next();
 })
 
 
 app.get('/authors', async (request, response) => {
-    const [rows] = await blogDB.execute('select * from author');
+    const [rows] = await blogDB.executeQuery('select * from author');
+    console.log(rows)
     response.json(rows)
 })
 
@@ -129,14 +134,15 @@ app.post('/authors', async (req,res) => {
         res.status(400).send({ error: 'Invalid Request' })
     }
     else{
-        const [rows] = await blogDB.execute(`insert into author values('${author_id}','${author_name}','${author_email}')`);
+        const rows = await blogDB.executeQuery(`insert into author values('${author_id}','${author_name}','${author_email}')`);
         res.json(rows)
     } 
 })
 
 app.delete('/authors/:id', async (req,res,next) => {
     const author_id =req.params.id
-    const [rows] = await blogDB.execute(`delete from author where author_id='${author_id}'`);
+    const [rows] = await blogDB.executeQuery(`delete from author where author_id='${author_id}'`);
+    console.log(rows)
     if (rows.affectedRows>0) res.json(rows);
     if (!res.headersSent) next();
 })
@@ -147,8 +153,10 @@ app.use(middleware.errorHandler)
 
 
 const generatePostID = async () => {
-    const [rows] = await blogDB.execute('select max(post_id) as max from post');
-    let new_id= Number(rows[0].max.slice(1,4)) + 1
+    const [rows] = await blogDB.executeQuery('select max(post_id) as max from post');
+    var new_id
+    if(rows[0].max!==null) { new_id= Number(rows[0].max.slice(1,4)) + 1}
+    else new_id=1;
     let formattedNumber = new_id.toLocaleString('en-US', {
         minimumIntegerDigits: 3,
         useGrouping: false
@@ -159,8 +167,12 @@ const generatePostID = async () => {
 }
 
 const generateAuthorID = async () => {
-    const [rows] = await blogDB.execute('select max(author_id) as max from author');
-    let new_id= Number(rows[0].max.slice(1,4)) + 1
+    
+    const [rows] = await blogDB.executeQuery('select max(author_id) as max from author');
+    var new_id
+    if(rows[0].max!==null) {
+         new_id= Number(rows[0].max.slice(1,4)) + 1;}
+    else new_id=1;
     let formattedNumber = new_id.toLocaleString('en-US', {
         minimumIntegerDigits: 3,
         useGrouping: false

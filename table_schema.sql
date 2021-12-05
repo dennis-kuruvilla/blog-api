@@ -1,5 +1,5 @@
 create table author (author_id char(4) not null,  author_name varchar(25), 
-author_email varchar(50) not null,primary key(author_id);
+author_email varchar(50) not null,primary key(author_id));
 
 CREATE TABLE post (
     post_id char(4) NOT NULL,
