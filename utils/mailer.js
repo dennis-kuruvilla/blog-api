@@ -1,10 +1,11 @@
 const nodemailer = require("nodemailer");
+require('dotenv').config();
 
 const sendMail = async (to,subject,text,html) =>{
-
-    const from_id = "serene.brook@outlook.com"
+    //Please specify your mail credentials in .env file and hardcode mail service in code
+    const from_id = process.env.MAIL_ID
     const from_service="hotmail"
-    const password = "zxcvqwer"
+    const password = process.env.MAIL_PASSWORD
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
 //   let testAccount = await nodemailer.createTestAccount();
