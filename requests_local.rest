@@ -1,0 +1,48 @@
+GET http://192.168.1.16:3002/
+
+###
+GET http://192.168.1.16:3002/posts
+
+###
+GET http://192.168.1.16:3002/posts/A003
+
+###
+
+GET http://192.168.1.16:3002/authors
+
+###
+POST http://192.168.1.16:3002/posts
+Content-Type: application/json
+
+{
+      "title": "Another random title",
+      "description": "A post by author 2, this will send a mail to all other authors",
+      "author": "A002"
+}
+###
+POST http://192.168.1.16:3002/authors
+Content-Type: application/json
+
+{
+      "author_name": "Dennis Kuruvilla 42",
+      "author_email": "thisisdensfni@y24mail.com"
+}
+
+###
+PUT http://192.168.1.16:3002/posts/P002
+Content-Type: application/json
+
+{
+      "title": "Another random title",
+      "description": "edited description",
+      "author": "A002"
+}
+
+###
+
+DELETE http://192.168.1.16:3002/posts/P002
+###
+
+DELETE http://192.168.1.16:3002/authors/A004
+
+

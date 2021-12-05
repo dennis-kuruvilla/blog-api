@@ -1,47 +1,47 @@
-GET http://192.168.1.16:3002/
+GET https://blog-api777.herokuapp.com/
 
 ###
-GET http://192.168.1.16:3002/posts
+GET https://blog-api777.herokuapp.com/posts
 
 ###
-GET http://192.168.1.16:3002/posts/A003
+GET https://blog-api777.herokuapp.com/posts/A003
 
 ###
 
-GET http://192.168.1.16:3002/authors
+GET https://blog-api777.herokuapp.com/authors
 
 ###
-POST http://192.168.1.16:3002/posts
+POST https://blog-api777.herokuapp.com/posts
 Content-Type: application/json
 
 {
-      "title": "A random title 2",
-      "description": "Another post by author 3, this will send a mail to all other authors",
-      "author": "A003"
+      "title": "title 2 ",
+      "description": "post by author 4, this will send a mail to all other authors",
+      "author": "A004"
 }
 ###
-POST http://192.168.1.16:3002/authors
+POST https://blog-api777.herokuapp.com/authors
 Content-Type: application/json
 
 {
-      "author_name": "Dennis Kuruvilla 3 ",
-      "author_email": "denniskuruvilla7773@gmail.com"
+      "author_name": "random author",
+      "author_email": "author@author.com"
 }
 
 ###
-PUT http://192.168.1.16:3002/posts/P002
+PUT https://blog-api777.herokuapp.com/posts/P002
 Content-Type: application/json
 
 {
-      "title": "another random title1212",
-      "description": "afgas",
+      "title": "Another random title",
+      "description": "edited description",
       "author": "A002"
 }
 
 ###
 
-DELETE http://192.168.1.16:3002/posts/P008
+DELETE https://blog-api777.herokuapp.com/posts/P002
 ###
 
-DELETE http://192.168.1.16:3002/authors/A002
+DELETE https://blog-api777.herokuapp.com/authors/A003
 
